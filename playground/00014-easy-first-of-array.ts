@@ -22,23 +22,31 @@
 
 /* _____________ 여기에 코드 입력 _____________ */
 
-type First<T extends any[]> = any
-
+type First<T extends any[]> = T["length"] extends 0 ? never : T[0]
 /* _____________ 테스트 케이스 _____________ */
-import type { Equal, Expect } from '@type-challenges/utils'
+import type { Equal, Expect } from "@type-challenges/utils"
 
 type cases = [
   Expect<Equal<First<[3, 2, 1]>, 3>>,
   Expect<Equal<First<[() => 123, { a: string }]>, () => 123>>,
   Expect<Equal<First<[]>, never>>,
-  Expect<Equal<First<[undefined]>, undefined>>,
+  Expect<Equal<First<[undefined]>, undefined>>
 ]
+
+type test<T extends (...args: any) => any> = T extends (...args: any) => infer R
+  ? R
+  : unknown
+
+const func1 = () => {
+  return ["string"]
+}
+type good = test<typeof func1>
 
 type errors = [
   // @ts-expect-error
-  First<'notArray'>,
+  First<"notArray">,
   // @ts-expect-error
-  First<{ 0: 'arrayLike' }>,
+  First<{ 0: "arrayLike" }>
 ]
 
 /* _____________ 다음 단계 _____________ */
